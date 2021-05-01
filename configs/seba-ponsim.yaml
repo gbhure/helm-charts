@@ -1,0 +1,68 @@
+---
+# Copyright 2018-present Open Networking Foundation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Values file for deploying SEBA with Ponsim
+# Use this file to deploy the service versions specified in the Helm charts.
+
+images:
+  rg:
+    # TODO: Modify when this docker image is published with a release tag
+    repository: 'dmoro92/voltha-tester'
+    tag: 'latest'
+
+# voltha
+etcd-cluster:
+  clusterSize: 1
+
+# in workflow/att-workflow service chart
+att-workflow-driver:
+  # this is mandatory, it's needed to correctly configure the kafka endpoint
+  kafkaService: cord-kafka
+
+# in workflow/tt-workflow service chart
+tt-workflow-driver:
+  image:
+    repository: andybavier/test-image-synchronizer
+    tag: tt-workflow-driver
+  # this is mandatory, it's needed to correctly configure the kafka endpoint
+  kafkaService: cord-kafka
+
+dt-workflow-driver:
+  # this is mandatory, it's needed to correctly configure the kafka endpoint
+  kafkaService: cord-kafka
+
+# in mininet chart
+vlanMatchDepth: 2
+enableMulticast: True
+
+# in ponsim-pod chart
+bandwidthProfiles: True
+legacyPonsim: False
+
+# in seba-services profile
+fabric:
+  stratum:
+    enabled: false
+    # BMv2 drivers will activate also stratum drivers
+    driverAppId: 'org.onosproject.drivers.bmv2'
+    # Use BMv2 pipeconf (already in ONOS)
+    pipeconfAppExternal: false
+    pipeconfAppId: 'org.onosproject.pipelines.fabric'
+
+bng:
+  external:
+    enabled: true
+  embedded:
+    enabled: false

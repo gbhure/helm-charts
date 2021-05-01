@@ -1,0 +1,83 @@
+---
+# Copyright 2018-present Open Networking Foundation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Default values for the seba-services profile.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+nameOverride: ""
+fullnameOverride: ""
+
+images:
+  tosca_loader:
+    repository: 'xosproject/tosca-loader'
+    tag: '{{ .Chart.AppVersion }}'
+    pullPolicy: 'Always'
+
+  xos_api_tester:
+    repository: 'xosproject/xos-api-tester'
+    tag: 'master'
+    pullPolicy: 'Always'
+
+global:
+  registry: ""
+
+xosAdminUser: "admin@opencord.org"
+xosAdminPassword: "letmein"
+
+# ONOS applications
+sadisAppUrl: "https://oss.sonatype.org/content/groups/public/org/opencord/sadis-app/4.0.1/sadis-app-4.0.1.oar"
+sadisAppVersion: "4.0.1"
+
+oltAppUrl: "https://oss.sonatype.org/content/groups/public/org/opencord/olt-app/4.0.0/olt-app-4.0.0.oar"
+oltAppVersion: "4.0.0"
+
+kafkaAppUrl: "https://oss.sonatype.org/content/groups/public/org/opencord/kafka/2.1.0/kafka-2.1.0.oar"
+kafkaAppVersion: "2.1.0"
+
+bngAppUrl: "https://oss.sonatype.org/content/groups/public/org/opencord/bng-app/1.0.0/bng-app-1.0.0.oar"
+bngAppVersion: "1.0.0"
+
+onosRestService: "onos-ui.default.svc.cluster.local"
+kafkaService: "cord-kafka.default.svc.cluster.local:9092"
+
+# Whether to install or not the fabric service.
+fabric:
+  enabled: true
+  # Whether the fabric uses Stratum or not, and the corresponding ONOS apps
+  # required to control the switch.
+  stratum:
+    enabled: false
+    # The ONOS driver to control the fabric switch
+    driverAppId: "org.onosproject.drivers.barefoot"
+    # Whether the app providing the pipeconf must be installed to ONOS from an
+    # external URL (pipeconfAppUrl). If false, the pipeconf app is assumed to be
+    # pre-installed in ONOS.
+    pipeconfAppExternal: true
+    pipeconfAppId: "org.opencord.fabric-tofino"
+    pipeconfAppUrl: "https://oss.sonatype.org/content/groups/public/org/opencord/fabric-tofino/1.1.0/fabric-tofino-1.1.0.oar"
+    pipeconfAppVersion: "1.1.0"
+
+onos-service:
+  enabled: true
+
+# Whether the BNG is external or embedded
+bng:
+  external:
+    enabled: true
+  embedded:
+    enabled: false

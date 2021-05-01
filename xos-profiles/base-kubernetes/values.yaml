@@ -1,0 +1,131 @@
+---
+# Copyright 2018-present Open Networking Foundation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Default values for the base-kubernetes profile.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+nameOverride: ""
+fullnameOverride: ""
+
+# tosca loader container
+images:
+  tosca_loader:
+    repository: 'xosproject/tosca-loader'
+    tag: '{{ .Chart.AppVersion }}'
+    pullPolicy: 'Always'
+
+global:
+  registry: ""
+
+xosAdminUser: "admin@opencord.org"
+xosAdminPassword: "letmein"
+
+# TOSCA recipes for the tosca-loader
+toscaRecipes:
+  fixtures:
+    tosca_definitions_version: tosca_simple_yaml_1_0
+    description: Some basic fixtures
+    imports:
+      - custom_types/networkparametertype.yaml
+      - custom_types/networktemplate.yaml
+    topology_template:
+      node_templates:
+    # -----------------------------------------------------------------------------
+    # Network Parameter Types
+    # -----------------------------------------------------------------------------
+        s_tag:
+          type: tosca.nodes.NetworkParameterType
+          properties:
+            name: s_tag
+        c_tag:
+          type: tosca.nodes.NetworkParameterType
+          properties:
+            name: c_tag
+        next_hop:
+          type: tosca.nodes.NetworkParameterType
+          properties:
+            name: next_hop
+        device:
+          type: tosca.nodes.NetworkParameterType
+          properties:
+            name: device
+        bridge:
+          type: tosca.nodes.NetworkParameterType
+          properties:
+            name: bridge
+        neutron_port_name:
+          type: tosca.nodes.NetworkParameterType
+          properties:
+            name: neutron_port_name
+
+    # -----------------------------------------------------------------------------
+    # Network Templates
+    # -----------------------------------------------------------------------------
+        Private:
+          type: tosca.nodes.NetworkTemplate
+          properties:
+            name: Private
+            visibility: private
+            translation: none
+        Public shared IPv4:
+          type: tosca.nodes.NetworkTemplate
+          properties:
+            name: Public shared IPv4
+            visibility: private
+            translation: NAT
+            shared_network_name: nat-net
+        Public dedicated IPv4:
+          type: tosca.nodes.NetworkTemplate
+          properties:
+            name: Public dedicated IPv4
+            visibility: public
+            translation: none
+            shared_network_name: ext-net
+
+  cordServices:
+    tosca_definitions_version: tosca_simple_yaml_1_0
+    description: Set up Kubernetes Service
+    imports:
+      - custom_types/kubernetesservice.yaml
+      - custom_types/trustdomain.yaml
+    topology_template:
+      node_templates:
+        default_trustdomain:
+          type: tosca.nodes.TrustDomain
+          properties:
+            name: "default"
+          requirements:
+            - owner:
+                node: service#kubernetes
+                relationship: tosca.relationships.BelongsToOne
+        service#kubernetes:
+          type: tosca.nodes.KubernetesService
+          properties:
+            name: kubernetes
+
+  serviceGraphConstraints:
+    tosca_definitions_version: tosca_simple_yaml_1_0
+    imports:
+       - custom_types/servicegraphconstraint.yaml
+    description: Constraints on the Services position in the graph
+    topology_template:
+      node_templates:
+        constraints:
+          type: tosca.nodes.ServiceGraphConstraint
+          properties:
+            constraints: '[]'

@@ -1,0 +1,130 @@
+---
+# Copyright 2018-present Open Networking Foundation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Only pull docker images if not already present
+
+# in xos-core, rcord-lite, onos and voltha charts
+image:
+  pullPolicy: 'IfNotPresent'
+
+# in xos-core chart and other charts with multiple images
+images:
+  xos_core:
+    pullPolicy: 'IfNotPresent'
+  xos_chameleon:
+    pullPolicy: 'IfNotPresent'
+  xos_tosca:
+    pullPolicy: 'IfNotPresent'
+  xos_api_tester:
+    pullPolicy: 'IfNotPresent'
+  tosca_loader:
+    pullPolicy: 'IfNotPresent'
+
+xos-db:
+  image:
+    pullPolicy: 'IfNotPresent'
+
+# in xos-gui sub-chart required by xos-core chart
+xos-gui:
+  images:
+    xos_gui:
+      pullPolicy: 'IfNotPresent'
+    xos_ws:
+      pullPolicy: 'IfNotPresent'
+
+# in RCORD service chart
+addressmanager:
+  image:
+    pullPolicy: 'IfNotPresent'
+att-workflow-driver:
+  image:
+    pullPolicy: 'IfNotPresent'
+fabric:
+  image:
+    pullPolicy: 'IfNotPresent'
+fabric-crossconnect:
+  image:
+    pullPolicy: 'IfNotPresent'
+onos-service:
+  image:
+    pullPolicy: 'IfNotPresent'
+volt:
+  image:
+    pullPolicy: 'IfNotPresent'
+vsg-hw:
+  image:
+    pullPolicy: 'IfNotPresent'
+rcord:
+  image:
+    pullPolicy: 'IfNotPresent'
+vrouter:
+  image:
+    pullPolicy: 'IfNotPresent'
+
+# in BASE-OPENSTACK chart
+openstack:
+  image:
+    pullPolicy: 'IfNotPresent'
+
+vtn-service:
+  image:
+    pullPolicy: 'IfNotPresent'
+
+# in MCORD
+vmme:
+  image:
+    pullPolicy: 'IfNotPresent'
+vspgwc:
+  image:
+    pullPolicy: 'IfNotPresent'
+vspgwu:
+  image:
+    pullPolicy: 'IfNotPresent'
+vhss:
+  image:
+    pullPolicy: 'IfNotPresent'
+hssdb:
+  image:
+    pullPolicy: 'IfNotPresent'
+internetemulator:
+  image:
+    pullPolicy: 'IfNotPresent'
+sdncontroller:
+  image:
+    pullPolicy: 'IfNotPresent'
+epc-service:
+  image:
+    pullPolicy: 'IfNotPresent'
+k8sepcservice:
+  image:
+    pullPolicy: 'IfNotPresent'
+mcord-subscriber:
+  image:
+    pullPolicy: 'IfNotPresent'
+progran:
+  image:
+    pullPolicy: 'IfNotPresent'
+
+# others
+kubernetes:
+  image:
+    pullPolicy: 'IfNotPresent'
+exampleservice:
+  image:
+    pullPolicy: 'IfNotPresent'
+simpleexampleservice:
+  image:
+    pullPolicy: 'IfNotPresent'
+

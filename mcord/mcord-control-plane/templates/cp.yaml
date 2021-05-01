@@ -1,0 +1,133 @@
+---
+# Copyright 2018-present Open Networking Foundation
+# Copyright 2018 Intel Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ngic-cp
+spec:
+  selector:
+    app: ngic-cp
+  clusterIP: None
+  ports:
+  - name: s11
+    port: {{ .Values.ngic_cp.ports.s11 }}
+    protocol: UDP
+  - name: sx
+    port: {{ .Values.ngic_cp.ports.sx }}
+    protocol: UDP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ngic-cp-external
+spec:
+  selector:
+    app: ngic-cp
+  type: NodePort
+  ports:
+    - name: sx
+      port: {{ .Values.ngic_cp.ports.sx }}
+      nodePort: {{ .Values.ngic_cp.ports.sx_external }}
+      protocol: UDP
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ngic-cp
+  labels:
+    app: ngic-cp
+spec:
+  replicas: {{ .Values.ngic_cp.replicas }}
+  selector:
+    matchLabels:
+      app: ngic-cp
+  serviceName: "ngic-cp"
+  template:
+    metadata:
+      labels:
+        app: ngic-cp
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: "{{ .Values.spgwc_node_selector }}"
+      initContainers:
+      - name: init-iptables
+        image: {{ .Values.ngic_cp.images.init }}
+        command: [ "sh", "-c"]
+        securityContext:
+          capabilities:
+            add:
+              - NET_ADMIN
+        args:
+        - iptables -I OUTPUT -p icmp --icmp-type destination-unreachable -j DROP;
+      terminationGracePeriodSeconds: 1
+      containers:
+      - name: ngic
+        image: {{ .Values.ngic_cp.images.cp }}
+        imagePullPolicy: IfNotPresent
+        stdin: true
+        command: [ "bash",  "-xc" ]
+        args:
+        - . /opt/ngic/config/cp_config.cfg;
+          sleep 20;
+          ./ngic_controlplane $EAL_ARGS -- $APP_ARGS;
+        tty: true
+        env:
+        - name: MME_S11_IP
+          value: {{ .Values.mme_hostname }}
+        - name: SGW_S11_IP
+          value: {{ .Values.spgwc_hostname }}
+        - name: SGW_S1U_IP
+          value: {{ .Values.spgwu_s1u_ip }}
+        - name: APN
+          value: {{ .Values.ngic_cp.config.apn }}
+        - name: IP_POOL_IP
+          value: "{{ .Values.ngic_cp.config.ue_ip_pool }}"
+        - name: IP_POOL_MASK
+          value: "{{ .Values.ngic_cp.config.ue_ip_pool_mask }}"
+        - name: S11_TEID_POOL_START
+          value: "00100000"
+        - name: S11_TEID_POOL_STOP
+          value: "001fffff"
+        - name: S1U_TEID_POOL_START
+          value: "00100000"
+        - name: S1U_TEID_POOL_STOP
+          value: "001fffff"
+        - name: MEM_LIMIT
+          valueFrom:
+            resourceFieldRef:
+              containerName: ngic
+              resource: limits.memory
+              divisor: 1Mi
+        volumeMounts:
+        - name: config-volume
+          mountPath: /opt/ngic/config
+        #- name: hugepage
+        #  mountPath: /dev/hugepages
+        - name: shared-data
+          mountPath: /opt/ngic/config/shared
+        resources:
+          limits:
+            #hugepages-1Gi: 4Gi
+            cpu: {{ .Values.ngic_cp.resources.cpu }}
+            memory: {{ .Values.ngic_cp.resources.mem }}
+      volumes:
+        - name: config-volume
+          configMap:
+            name: ngiccp-config
+        - name: shared-data
+          emptyDir: {}

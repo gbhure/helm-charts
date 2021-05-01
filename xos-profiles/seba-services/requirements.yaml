@@ -1,0 +1,41 @@
+---
+# Copyright 2018-present Open Networking Foundation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+dependencies:
+- name: rcord
+  version: 2.0.0
+  repository: https://charts.opencord.org
+- name: onos-service
+  version: 3.0.0
+  repository: https://charts.opencord.org
+  condition: onos-service.enabled
+- name: fabric
+  version: 3.0.0
+  repository: https://charts.opencord.org
+  condition: fabric.enabled
+- name: volt
+  version: 3.0.0
+  repository: https://charts.opencord.org
+- name: fabric-crossconnect
+  version: 2.0.0
+  repository: https://charts.opencord.org
+  condition: bng.external.enabled
+- name: vrouter
+  version: 3.0.0
+  repository: https://charts.opencord.org
+  condition: bng.embedded.enabled
+- name: sadis-server
+  version: 1.0.4
+  repository: https://charts.opencord.org

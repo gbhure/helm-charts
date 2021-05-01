@@ -1,0 +1,144 @@
+---
+# Copyright 2018--present Open Networking Foundation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Values file for SEBA log aggregation infra
+# NOTE: must start this chart with the name "logging":
+#   helm install -n logging logging
+# ortherwise the elasticsearch hostname won't work properly in the other containers
+
+# elasticstack config
+# ref: https://github.com/helm/charts/tree/master/incubator/elasticsearch
+elasticsearch:
+  client:
+    serviceType: "NodePort"
+  master:
+    persistence:
+      storageClass: "local-ssd"
+      size: "5Gi"
+  data:
+    persistence:
+      storageClass: "local-hdd"
+      size: "10Gi"
+
+# kibana config
+# ref: https://github.com/helm/charts/tree/master/stable/kibana
+kibana:
+  enabled: true
+#  dashboardImport:
+#    dashboards: |-
+#
+  service:
+    type: "NodePort"
+    nodePort: 30601
+  env:
+    ELASTICSEARCH_URL: "http://logging-elasticsearch-client:9200"
+
+  dashboardImport:
+    dashboards:
+      1_create_index: |-
+        {
+          "version": "6.4.2",
+          "objects": [
+            {
+              "id": "749ea2f0-d15c-11e8-b4aa-8f5499fd5eba",
+              "type": "index-pattern",
+              "version": 2,
+              "attributes": {
+                "title": "logstash-*",
+                "timeFieldName": "@timestamp",
+                "fields": "[{\"name\":\"@timestamp\",\"type\":\"date\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"@version\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"_id\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":false},{\"name\":\"_index\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":false},{\"name\":\"_score\",\"type\":\"number\",\"count\":0,\"scripted\":false,\"searchable\":false,\"aggregatable\":false,\"readFromDocValues\":false},{\"name\":\"_source\",\"type\":\"_source\",\"count\":0,\"scripted\":false,\"searchable\":false,\"aggregatable\":false,\"readFromDocValues\":false},{\"name\":\"_type\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":false},{\"name\":\"bundle.id\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":false,\"readFromDocValues\":false},{\"name\":\"bundle.id.keyword\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"bundle.name\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":false,\"readFromDocValues\":false},{\"name\":\"bundle.name.keyword\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"bundle.version\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":false,\"readFromDocValues\":false},{\"name\":\"bundle.version.keyword\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"category\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":false,\"readFromDocValues\":false},{\"name\":\"category.keyword\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"error.message\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":false,\"readFromDocValues\":false},{\"name\":\"error.message.keyword\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"error.type\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":false,\"readFromDocValues\":false},{\"name\":\"error.type.keyword\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"detail\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":false,\"readFromDocValues\":false},{\"name\":\"geoip.ip\",\"type\":\"ip\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"geoip.latitude\",\"type\":\"number\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"geoip.location\",\"type\":\"geo_point\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"geoip.longitude\",\"type\":\"number\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"host.name\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":false,\"readFromDocValues\":false},{\"name\":\"host.name.keyword\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"input.type\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":false,\"readFromDocValues\":false},{\"name\":\"input.type.keyword\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"kafka_key\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":false,\"readFromDocValues\":false},{\"name\":\"kafka_key.keyword\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"kafka_timestamp\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":false,\"readFromDocValues\":false},{\"name\":\"kafka_timestamp.keyword\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"kafka_topic\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":false,\"readFromDocValues\":false},{\"name\":\"kafka_topic.keyword\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"levelname\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":false,\"readFromDocValues\":false},{\"name\":\"levelname.keyword\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"levelno\",\"type\":\"number\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"lineno\",\"type\":\"number\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"message\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":false,\"readFromDocValues\":false},{\"name\":\"offset\",\"type\":\"number\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"msg.model\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":false,\"readFromDocValues\":false},{\"name\":\"msg.version\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"thread\",\"type\":\"number\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true},{\"name\":\"threadName\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":false,\"readFromDocValues\":false},{\"name\":\"type\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":false,\"readFromDocValues\":false},{\"name\":\"type.keyword\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"searchable\":true,\"aggregatable\":true,\"readFromDocValues\":true}]"
+              }
+            }
+          ]
+        }
+
+# logstash config
+# ref: https://github.com/helm/charts/tree/master/incubator/logstash
+logstash:
+  enabled: true
+  elasticsearch:
+    host: "logging-elasticsearch-client"
+
+  # we have kafka, so persistence isn't needed
+  # ref: https://www.elastic.co/guide/en/logstash/current/persistent-queues.html
+  persistence:
+    enabled: false
+
+  # Probe default delays are too short, which puts logstash into a reboot loop
+  livenessProbe:
+    initialDelaySeconds: 120
+
+  readinessProbe:
+    initialDelaySeconds: 120
+
+  # 'config' k/v are turned into env vars for logstash container
+  # ref: https://www.elastic.co/guide/en/logstash/current/docker-config.html#docker-env-config
+  # config:
+  #   LOG_LEVEL: trace
+
+  # Kafka input plugin
+  # ref: https://www.elastic.co/guide/en/logstash/current/plugins-inputs-kafka.html
+  inputs:
+    main: |-
+      input {
+        kafka {
+          auto_offset_reset => "earliest" # get all previous items from new topics
+          bootstrap_servers => "cord-kafka:9092"
+          client_id => "logstash_ck"
+          codec => json { charset => "UTF-8" }
+          consumer_threads => 1
+          decorate_events => true
+          group_id => "logstash_ck"
+          metadata_max_age_ms => 60000 # recheck for new topics every minute
+          # other topics that are not indexed: xos.gui_events, voltha.kpis, voltha.heartbeat
+          topics_pattern => '.*\.events|dhcp.*|onos.*|.*\.log.*'
+          type => "cord-kafka"
+        }
+      }
+
+  filters:
+    main: |-
+      filter {
+        mutate {
+          add_field => {
+            "kafka_topic" => "%{[@metadata][kafka][topic]}"
+            "kafka_key" => "%{[@metadata][kafka][key]}"
+            "kafka_timestamp" => "%{[@metadata][kafka][timestamp]}"
+          }
+        }
+
+        json {
+          source => "data"
+          target => "data"
+          skip_on_invalid_json => true
+        }
+      }
+
+  outputs:
+    main: |-
+      output {
+        elasticsearch {
+          hosts => ["${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}"]
+        }
+      }
+
+# fluentd-elasticsearch config
+# ref: https://github.com/helm/charts/tree/master/stable/fluentd-elasticsearch
+# forwards k8s logs from nodes to elasticsearch
+fluentd-elasticsearch:
+  enabled: false
+  elasticsearch:
+    host: "logging-elasticsearch-client"
+
